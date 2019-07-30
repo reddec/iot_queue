@@ -3,18 +3,16 @@ project(iot_queue C)
 
 set(CMAKE_C_STANDARD 11)
 include_directories(include)
-file(GLOB iot_queue_src "src/*.c")
 file(GLOB iot_queue_headers "include/*.h")
+set(iot_queue_src src/iot_queue.c src/iot_queue_partition.c)
 
 enable_testing()
 add_subdirectory(test build/test)
 
 add_library(iot_queue SHARED ${iot_queue_src})
-set_target_properties(iot_queue PROPERTIES PUBLIC_HEADER ${iot_queue_headers})
 
 add_library(iot_queue_static STATIC ${iot_queue_src})
 set_target_properties(iot_queue_static PROPERTIES OUTPUT_NAME iot_queue)
-set_target_properties(iot_queue_static PROPERTIES PUBLIC_HEADER ${iot_queue_headers})
 
 INSTALL(DIRECTORY ${CMAKE_SOURCE_DIR}/include/
         DESTINATION include

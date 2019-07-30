@@ -3,16 +3,14 @@
 #include <stdint.h>
 #include <memory.h>
 #include <unistd.h>
-#include <fcntl.h>
-#include <sys/mman.h>
 #include <sys/stat.h>
 
 ssize_t safe_pread(int fd, void *buf, size_t count, off_t offset);
 ssize_t safe_pwrite(int fd, const void *buf, size_t count, off_t offset);
-void iot_queue_store_cache(struct queue_t *app, struct iot_queue_index_t chunk);
-int iot_queue_read_index_at(const struct queue_t *app, struct iot_queue_index_t *chunk, size_t fd_offset);
+void iot_queue_store_cache(struct iot_queue_t *app, struct iot_queue_index_t chunk);
+int iot_queue_read_index_at(const struct iot_queue_t *app, struct iot_queue_index_t *chunk, size_t fd_offset);
 
-void iot_print_app(const struct queue_t *app) {
+void iot_print_app(const struct iot_queue_t *app) {
   printf("queue_fd: %i\n", app->data_fd);
   printf("index_fd: %i\n", app->index_fd);
   printf("data_position: %li\n", app->data_position);
@@ -27,11 +25,11 @@ void iot_print_index(const struct iot_queue_index_t *chunk) {
   printf("offset: %li\n", chunk->offset);
 }
 
-int iot_queue_append_str(struct queue_t *app, const char *buffer) {
+int iot_queue_append_str(struct iot_queue_t *app, const char *buffer) {
   return iot_queue_append(app, buffer, strlen(buffer));
 }
 
-int iot_queue_append(struct queue_t *app, const void *buffer, size_t size) {
+int iot_queue_append(struct iot_queue_t *app, const void *buffer, size_t size) {
   if (size <= 0) {
     return -1;
   }
@@ -54,7 +52,7 @@ int iot_queue_append(struct queue_t *app, const void *buffer, size_t size) {
   return 0;
 }
 
-ssize_t iot_queue_read(const struct queue_t *app, void *dest, size_t dest_size, size_t index) {
+ssize_t iot_queue_read(const struct iot_queue_t *app, void *dest, size_t dest_size, size_t index) {
   struct iot_queue_index_t chunk = {0};
   if (iot_queue_read_index(app, &chunk, index) < 0) {
     return -1;
@@ -66,7 +64,7 @@ ssize_t iot_queue_read(const struct queue_t *app, void *dest, size_t dest_size, 
   return safe_pread(app->data_fd, dest, read_size, chunk.offset);
 }
 
-int iot_queue_read_index(const struct queue_t *app, struct iot_queue_index_t *info, size_t index) {
+int iot_queue_read_index(const struct iot_queue_t *app, struct iot_queue_index_t *info, size_t index) {
   if (index >= app->num_elements) {
     return -1;
   }
@@ -82,7 +80,7 @@ int iot_queue_read_index(const struct queue_t *app, struct iot_queue_index_t *in
   return iot_queue_read_index_at(app, info, fd_offset);
 }
 
-int iot_queue_read_index_at(const struct queue_t *app, struct iot_queue_index_t *chunk, size_t fd_offset) {
+int iot_queue_read_index_at(const struct iot_queue_t *app, struct iot_queue_index_t *chunk, size_t fd_offset) {
   int rc = safe_pread(app->index_fd, (void *) chunk, INDEX_CHUNK_SIZE, fd_offset);
   if (rc < INDEX_CHUNK_SIZE) {
     perror("read index chunk");
@@ -91,7 +89,7 @@ int iot_queue_read_index_at(const struct queue_t *app, struct iot_queue_index_t 
   return 0;
 }
 
-int iot_queue_warm_cache(struct queue_t *app) {
+int iot_queue_warm_cache(struct iot_queue_t *app) {
   uint64_t num = app->num_elements;
   if (num > app->cache_reserved_num) {
     num = app->cache_reserved_num;
@@ -128,12 +126,12 @@ ssize_t safe_pwrite(int fd, const void *buf, size_t count, off_t offset) {
   return complete;
 }
 
-int iot_queue_open(struct queue_t *app,
+int iot_queue_open(struct iot_queue_t *app,
                    struct iot_queue_index_t *cache,
                    size_t num_cache,
                    int index_fd,
                    int data_fd) {
-  struct queue_t target = {0};
+  struct iot_queue_t target = {0};
   target.index_fd = index_fd;
   target.data_fd = data_fd;
 
@@ -171,7 +169,7 @@ int iot_queue_open(struct queue_t *app,
   return 0;
 }
 
-void iot_queue_store_cache(struct queue_t *app, struct iot_queue_index_t chunk) {
+void iot_queue_store_cache(struct iot_queue_t *app, struct iot_queue_index_t chunk) {
   if (app->cache_reserved_num == 0) {
     return;
   }

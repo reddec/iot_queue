@@ -12,7 +12,7 @@
 
 struct iot_queue_index_t cache[8] = {0};
 
-struct queue_t app;
+struct iot_queue_t app;
 
 void deinit();
 

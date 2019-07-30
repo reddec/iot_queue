@@ -2,7 +2,7 @@
 
 Simple, lightweight and easy-to-use set of libraries and tools to make queues.
 
-Architecture design principles:
+Architecture design principles (ADP):
 
 1. SHOULD be capable to handle extreme amount of messages (billions)
 2. Single message always can fit into memory (it means that messages usually relatively small)
@@ -13,9 +13,9 @@ Architecture design principles:
    c. power off/system corruption during writing index
 5. SHOULD be fast enough but speed is not a main concern (expected performance should be about: 300-500 messages/second)
 6. SHOULD be append-only queue. Truncating is optional and supposed to be an offline process (still not yet clean)
+7. Fetch newest messages SHOULD be faster than fetch historical messages
 
-
-Coding design principles:
+Coding design principles (CDP):
 
 1. No memory allocations. At all. All buffers should be stack based or provided by external code
 2. No "destructors": all resource allocation should be done by external code (like file descriptors)

@@ -21,7 +21,7 @@ enum iot_queue_consts {
  * Describes queue instance. Queue doesn't handle open/close file descriptors.
  * Thread not safe.
  */
-struct queue_t {
+struct iot_queue_t {
   // data
   int data_fd;                 // file descriptor for messages
   uint64_t data_position;      // last committed position in a file
@@ -49,7 +49,7 @@ struct queue_t {
  * @param data_fd data (messages) file descriptor
  * @return 0 on success, negative on error
  */
-int iot_queue_open(struct queue_t *app,
+int iot_queue_open(struct iot_queue_t *app,
                    struct iot_queue_index_t *cache,
                    size_t num_cache,
                    int index_fd,
@@ -63,7 +63,7 @@ int iot_queue_open(struct queue_t *app,
  * @param size size of message
  * @return 0 on success, negative on error
  */
-int iot_queue_append(struct queue_t *app, const void *buffer, size_t size);
+int iot_queue_append(struct iot_queue_t *app, const void *buffer, size_t size);
 
 /**
  * Append one string to the queue. Same as iot_queue_append, but invokes strlen inside
@@ -71,7 +71,7 @@ int iot_queue_append(struct queue_t *app, const void *buffer, size_t size);
  * @param buffer zero-terminated string to append
  * @return 0 on success, negative on error
  */
-int iot_queue_append_str(struct queue_t *app, const char *buffer);
+int iot_queue_append_str(struct iot_queue_t *app, const char *buffer);
 
 /**
  * Read single index chunk (from cache if possible)
@@ -80,7 +80,7 @@ int iot_queue_append_str(struct queue_t *app, const char *buffer);
  * @param index number of chunk to read in range from 0 (oldest) to num_elements - 1 (newest)
  * @return 0 on success, negative on error
  */
-int iot_queue_read_index(const struct queue_t *app, struct iot_queue_index_t *info, size_t index);
+int iot_queue_read_index(const struct iot_queue_t *app, struct iot_queue_index_t *info, size_t index);
 
 /**
  * Read stored message. It's safe to provide destination buffer lower than original message.
@@ -92,12 +92,12 @@ int iot_queue_read_index(const struct queue_t *app, struct iot_queue_index_t *in
  * @param index number of message to read in range from 0 (oldest) to num_elements - 1 (newest)
  * @return size of on read bytes of message, negative on error
  */
-ssize_t iot_queue_read(const struct queue_t *app, void *dest, size_t dest_size, size_t index);
+ssize_t iot_queue_read(const struct iot_queue_t *app, void *dest, size_t dest_size, size_t index);
 
 /**
  * Print to STDOUT information about queue
  */
-void iot_print_app(const struct queue_t *app);
+void iot_print_app(const struct iot_queue_t *app);
 
 /**
  * Print to STDOUT information about index chunk
