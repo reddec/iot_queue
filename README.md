@@ -22,3 +22,35 @@ Coding design principles (CDP):
 3. Zero (or positive in case of buffer operations) return code means success, negative - error
 4. Should be easy-to-use interfaces "by default" with advanced options
 
+
+## iot_queued
+
+Simple daemon for single queue with ZMQ interface.
+
+Runtime flags:
+
+```
+-C, --cache-size <uint> [default: 65536] size of cached index chunks
+-L, --line-size <uint>  [default: 8192] maximum size of line (incoming message)
+-i, --index-file <path> [default: index.bin] path to index file
+-d, --data-file <path>  [default: data.bin] path to data file
+-b, --bind <zmq>        [default: tcp://*:9888] URL to bind API (rep) socket
+-h, --help      show this help
+```
+
+### API
+
+#### PUSH
+
+Append multiple messages to the queue.
+
+* **Input**: <PUSH:string>, [<MSG:bytes>, ... ]
+* **Output**: <OK:string> | <FAIL:string>
+
+#### FETCH
+
+Fetch messages from the queue starting from `OFFSET` with `LIMIT`.
+
+* **Input**: <FETCH:string>, <OFFSET:string>, <LIMIT:string>
+* **Output**: <OK:string>, [<MSG:bytes>, ... ] | <FAIL:string>
+

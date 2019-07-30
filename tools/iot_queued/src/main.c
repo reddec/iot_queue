@@ -191,7 +191,6 @@ int cmd_fetch(struct app_t *app, void *socket) {
   if (top > app->queue.num_elements) {
     top = app->queue.num_elements;
   }
-  printf("FROM %li TO %li\n", offset, top);
   rc = zmq_send_const(socket, "OK", 2, top > offset ? ZMQ_SNDMORE : 0);
   if (rc < 0) {
     return -4;
