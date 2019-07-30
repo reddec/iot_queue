@@ -8,6 +8,7 @@ set(iot_queue_src src/iot_queue.c src/iot_queue_partition.c)
 
 enable_testing()
 add_subdirectory(test build/test)
+add_subdirectory(tools/iot_queued)
 
 add_library(iot_queue SHARED ${iot_queue_src})
 
@@ -18,12 +19,12 @@ INSTALL(DIRECTORY ${CMAKE_SOURCE_DIR}/include/
         DESTINATION include
         FILES_MATCHING PATTERN "*.h*")
 
-INSTALL(TARGETS iot_queue
-        LIBRARY DESTINATION lib)
+INSTALL(TARGETS iot_queue LIBRARY DESTINATION lib)
 
-INSTALL(TARGETS iot_queue_static
-        ARCHIVE DESTINATION lib)
+INSTALL(TARGETS iot_queue_static ARCHIVE DESTINATION lib)
+# tools
 
+INSTALL(TARGETS iot_queued RUNTIME DESTINATION bin)
 # packaging
 
 SET(CPACK_PACKAGE_DESCRIPTION_SUMMARY "iot_queue")
