@@ -6,7 +6,7 @@
 #define IOT_QUEUE_IOT_QUEUE_PARTITION_H
 #include "iot_queue.h"
 
-/**s
+/**
  * Pool of available queues.
  */
 struct iot_queue_pool {
@@ -48,7 +48,7 @@ int iot_queue_pool_attach_queue(struct iot_queue_pool *pool, struct iot_queue_t 
  *
  * @param pool initialized pool of queue partitions
  * @param queue destination queue
-* @return 0 on success, -1 if no available queues (empty pool)
+ * @return 0 on success, -1 if no available queues (empty pool)
  */
 int iot_queue_pool_active_queue(const struct iot_queue_pool *pool, struct iot_queue_t **queue);
 #endif //IOT_QUEUE_IOT_QUEUE_PARTITION_H

@@ -45,7 +45,7 @@ int iot_queue_append(struct iot_queue_t *app, const void *buffer, size_t size) {
   if (safe_pwrite(app->index_fd, (void *) &chunk, INDEX_CHUNK_SIZE, app->index_position) < INDEX_CHUNK_SIZE) {
     return -3;
   }
-  app->index_position +=  INDEX_CHUNK_SIZE;
+  app->index_position += INDEX_CHUNK_SIZE;
   app->data_position += size;
   ++(app->num_elements);
   iot_queue_store_cache(app, chunk);
@@ -72,8 +72,10 @@ int iot_queue_read_index(const struct iot_queue_t *app, struct iot_queue_index_t
   if (history_depth <= app->cache_reserved_num && history_depth <= app->num_elements) {
     // in cache
     size_t cache_idx = (app->cache_num - history_depth) % app->cache_reserved_num;
-    *info = app->cache[cache_idx];
-    return 0;
+    if (cache_idx < app->cache_num) {
+      *info = app->cache[cache_idx];
+      return 0;
+    }
   }
   // read from FS
   size_t fd_offset = index * INDEX_CHUNK_SIZE;
