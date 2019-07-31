@@ -38,6 +38,11 @@ Runtime flags:
 -h, --help      show this help
 ```
 
+Requirements:
+
+* zeromq
+* iot_queue
+
 ### API
 
 #### PUSH

@@ -1,27 +1,46 @@
-cmake_minimum_required(VERSION 3.14)
+cmake_minimum_required(VERSION 3.13)
 project(iot_queue C)
-
+add_subdirectory(tools/iot_queued)
+add_subdirectory(vendor/libzmq)
 set(CMAKE_C_STANDARD 11)
-include_directories(include)
+
 file(GLOB iot_queue_headers "include/*.h")
 set(iot_queue_src src/iot_queue.c src/iot_queue_partition.c)
 
-enable_testing()
-add_subdirectory(test build/test)
-add_subdirectory(tools/iot_queued)
+add_library(iot_queue SHARED ${iot_queue_src} ${iot_queue_headers})
 
-add_library(iot_queue SHARED ${iot_queue_src})
+add_library(iot_queue_static STATIC ${iot_queue_src} ${iot_queue_headers})
 
-add_library(iot_queue_static STATIC ${iot_queue_src})
-set_target_properties(iot_queue_static PROPERTIES OUTPUT_NAME iot_queue)
+target_include_directories(iot_queue_static PUBLIC
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
+        $<INSTALL_INTERFACE:include>)
+target_include_directories(iot_queue PUBLIC
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
+        $<INSTALL_INTERFACE:include>)
+set_target_properties(iot_queue_static
+        PROPERTIES
+        OUTPUT_NAME iot_queue
+        PUBLIC_HEADER "${iot_queue_headers}")
+
+
+set_target_properties(iot_queue
+        PROPERTIES
+        PUBLIC_HEADER "${iot_queue_headers}")
 
 INSTALL(DIRECTORY ${CMAKE_SOURCE_DIR}/include/
         DESTINATION include
         FILES_MATCHING PATTERN "*.h*")
 
-INSTALL(TARGETS iot_queue LIBRARY DESTINATION lib)
-
-INSTALL(TARGETS iot_queue_static ARCHIVE DESTINATION lib)
+#INSTALL(TARGETS iot_queue LIBRARY DESTINATION lib)
+#INSTALL(TARGETS iot_queue_static ARCHIVE DESTINATION lib)
+install(TARGETS iot_queue iot_queue_static
+        RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+        ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        FRAMEWORK DESTINATION "Library/Frameworks"
+        PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 # tools
 
 INSTALL(TARGETS iot_queued RUNTIME DESTINATION bin)
