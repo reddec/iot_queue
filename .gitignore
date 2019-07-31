@@ -5,3 +5,4 @@ build
 data.bin
 index.bin
 zeromq-4.3.2
+dockcross-*

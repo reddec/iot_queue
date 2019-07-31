@@ -1,8 +1,9 @@
 cmake_minimum_required(VERSION 3.13)
 project(iot_queue C)
+set(CMAKE_C_STANDARD 11)
+
 add_subdirectory(tools/iot_queued)
 add_subdirectory(vendor/libzmq)
-set(CMAKE_C_STANDARD 11)
 
 file(GLOB iot_queue_headers "include/*.h")
 set(iot_queue_src src/iot_queue.c src/iot_queue_partition.c)
